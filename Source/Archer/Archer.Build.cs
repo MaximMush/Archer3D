@@ -12,7 +12,7 @@ public class Archer : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-		PublicIncludePaths.AddRange(new string[] { "Archer/Public/Player" });
+		PublicIncludePaths.AddRange(new string[] { "Archer/Public/Player", "Archer/Public/Weapon", "Archer/Public/Components" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

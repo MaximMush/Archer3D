@@ -4,13 +4,24 @@
 #include "Player/ArcherBaseCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/BaseWeaponComponent.h"
+
 
 AArcherBaseCharacter::AArcherBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
+	SpringArmComponent->SetupAttachment(GetRootComponent());
+	SpringArmComponent->bUsePawnControlRotation = true;
+
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-	CameraComponent->SetupAttachment(GetRootComponent());
+	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	WeaponComponent = CreateDefaultSubobject<UBaseWeaponComponent>("WeaponComponent");
+
 }
 
 void AArcherBaseCharacter::BeginPlay()
@@ -27,8 +38,16 @@ void AArcherBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	check(PlayerInputComponent);
+	check(WeaponComponent);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AArcherBaseCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AArcherBaseCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("LookUp", this, &AArcherBaseCharacter::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("TurnAround", this, &AArcherBaseCharacter::AddControllerYawInput);
+	
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AArcherBaseCharacter::Jump);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UBaseWeaponComponent::Fire);
 }
 
 void AArcherBaseCharacter::MoveForward(float Amount)
